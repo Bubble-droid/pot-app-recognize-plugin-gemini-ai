@@ -1,37 +1,59 @@
 {
-  "id": "plugin.com.pot-app.ocrspace",
+  "id": "plugin.bubble.recognize-gemini-ai",
   "plugin_type": "recognize",
-  "icon": "icon.png",
-  "display": "OCR Space",
-  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-template",
+  "icon": "gemini-ai.svg",
+  "display": "Gemini AI 文字识别",
+  "homepage": "https://github.com/Bubble-droid/pot-app-recognize-plugin-gemini-ai",
   "needs": [
     {
-      "key": "engine",
-      "display": "Engine",
-      "type": "select",
-      "options": { "1": "Engine 1", "2": "Engine 2", "3": "Engine 3" }
+      "key": "modelName",
+      "display": "Gemini 模型（默认 gemini-2.5-flash-lite）",
+      "type": "input"
     },
-    { "key": "apikey", "display": "Api Key", "type": "input" }
+    {
+      "key": "apiKey",
+      "display": "Gemini API 密钥（必填）",
+      "type": "input"
+    },
+    {
+      "key": "googleSearch",
+      "display": "谷歌搜索",
+      "type": "select",
+      "options": {
+        "false": "禁用",
+        "true": "启用"
+      }
+    },
+    {
+      "key": "Thinking",
+      "display": "思考预算（0 为禁用，-1 为动态）",
+      "type": "input"
+    },
+    {
+      "key": "temperature（0.0-2.0）",
+      "display": "温度",
+      "type": "input"
+    }
   ],
   "language": {
-    "auto": "eng",
-    "zh_cn": "chs",
-    "zh_tw": "cht",
-    "en": "eng",
-    "ja": "jpn",
-    "ko": "kor",
-    "fr": "fre",
-    "es": "spa",
-    "ru": "rus",
-    "de": "ger",
-    "it": "ita",
-    "tr": "tur",
-    "pt_pt": "por",
-    "pt_br": "por",
-    "vi": "vie",
-    "th": "tai",
-    "ar": "ara",
-    "hi": "hin",
-    "fa": "per"
+    "auto": "Auto",
+    "zh_cn": "Simplified Chinese",
+    "zh_tw": "Traditional Chinese",
+    "en": "English",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "fr": "French",
+    "es": "Spanish",
+    "ru": "Russian",
+    "de": "German",
+    "it": "Italian",
+    "tr": "Turkish",
+    "pt_pt": "Portuguese (Portugal)",
+    "pt_br": "Portuguese (Brazil)",
+    "vi": "Vietnamese",
+    "th": "Thai",
+    "ar": "Arabic",
+    "hi": "Hindi",
+    "fa": "Persian"
   }
 }
