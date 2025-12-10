@@ -6,8 +6,13 @@
   "homepage": "https://github.com/Bubble-droid/pot-app-recognize-plugin-gemini-ai",
   "needs": [
     {
-      "key": "modelName",
-      "display": "Gemini 模型（默认 gemini-2.5-flash-lite）",
+      "key": "endpoint",
+      "display": "Gemini API 基础 URL（请勿携带版本路径，默认为官方 API 地址）",
+      "type": "input"
+    },
+    {
+      "key": "model",
+      "display": "Gemini 模型（默认为 gemini-flash-lite）",
       "type": "input"
     },
     {
@@ -17,20 +22,24 @@
     },
     {
       "key": "googleSearch",
-      "display": "谷歌搜索",
+      "display": "谷歌搜索（需要模型支持）",
       "type": "select",
       "options": {
-        "false": "禁用",
-        "true": "启用"
+        "disable": "禁用",
+        "enable": "启用"
       }
     },
     {
       "key": "Thinking",
-      "display": "思考预算（0 为禁用，-1 为动态）",
-      "type": "input"
+      "display": "思考（需要模型支持）",
+      "type": "select",
+      "options": {
+        "disable": "禁用",
+        "enable": "启用"
+      }
     },
     {
-      "key": "temperature（0.0-2.0）",
+      "key": "temperature（默认为 1，范围 0.0-2.0）",
       "display": "温度",
       "type": "input"
     }

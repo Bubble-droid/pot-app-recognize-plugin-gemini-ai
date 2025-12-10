@@ -1,13 +1,18 @@
 async function recognize(base64, lang, options) {
-  const { config, utils } = options;
-  const { http } = utils;
-  const { fetch, Body } = http;
-  const { modelName, apiKey, googleSearch, Thinking, temperature } = config;
+  const {
+    config = {},
+    utils: {
+      http: { fetch, Body },
+    },
+  } = options;
+  const { endpoint, model, apiKey, googleSearch, Thinking, temperature } = config;
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName || 'gemini-2.5-flash-lite'}:generateContent`;
+  const apiUrl = `${endpoint || 'https://generativelanguage.googleapis.com'}/v1beta/models/${
+    model || 'gemini-flash-lite'
+  }:generateContent`;
 
   if (!apiKey) {
-    throw '缺少 Gemini API 密钥，请在插件配置中填写您的 API 密钥';
+    throw '缺少 Gemini API 密钥，请在插件配置中填写您的密钥';
   }
 
   const headers = {
@@ -15,35 +20,9 @@ async function recognize(base64, lang, options) {
     'X-goog-api-key': apiKey,
   };
 
-  const contents = [
+  const systemPrompt = [
     {
-      role: 'user',
-      parts: [
-        {
-          inlineData: {
-            mimeType: 'image/png',
-            data: base64,
-          },
-        },
-        {
-          text: `Just recognize the text in the image. Do not offer unnecessary explanations.`,
-        },
-      ],
-    },
-  ];
-
-  const tools = [
-    String(googleSearch) === 'true'
-      ? {
-          googleSearch: {},
-        }
-      : {},
-  ];
-
-  const systemInstruction = {
-    parts: [
-      {
-        text: `## SYSTEM PROTOCOL: HEADLESS OCR & FORMATTING ENGINE ##
+      text: `## SYSTEM PROTOCOL: HEADLESS OCR & FORMATTING ENGINE ##
 
 # 1. FUNCTION
 Your sole function is to serve as a high-fidelity, image-to-text recognition and structuring engine (OCR). You operate as a headless service. You do not have a personality. You do not interact. You only process.
@@ -106,17 +85,47 @@ def calculate_sum(a, b):
 -----
 
 Engine activated. Awaiting input.`,
-      },
-    ],
-  };
+    },
+  ];
 
-  const thinkingConfig = {
-    thinkingBudget: Thinking ? Number(Thinking) : -1,
-  };
+  const contents = [
+    {
+      role: 'user',
+      parts: systemPrompt,
+    },
+    {
+      role: 'user',
+      parts: [
+        {
+          inlineData: {
+            mimeType: 'image/png',
+            data: base64,
+          },
+        },
+        {
+          text: `Just recognize the text in the image, do not provide any explanation.`,
+        },
+      ],
+    },
+  ];
+
+  const tools = [
+    String(googleSearch) === 'enable'
+      ? {
+          googleSearch: {},
+        }
+      : null,
+  ].filter(Boolean);
 
   const generationConfig = {
-    temperature: temperature ? Number(temperature) : 0.3,
-    thinkingConfig,
+    temperature: Number(temperature ?? '1'),
+    ...(String(Thinking) === 'enable'
+      ? {
+          thinkingConfig: {
+            thinkingBudget: -1,
+          },
+        }
+      : {}),
   };
 
   const safetySettings = [
@@ -140,8 +149,7 @@ Engine activated. Awaiting input.`,
 
   const payload = {
     contents,
-    tools,
-    systemInstruction,
+    ...(tools.length > 0 ? { tools } : {}),
     generationConfig,
     safetySettings,
   };
@@ -151,7 +159,7 @@ Engine activated. Awaiting input.`,
     url: apiUrl,
     headers,
     body: Body.json(payload),
-    timeout: 60000,
+    timeout: 60_000,
     responseType: 1,
   });
 
@@ -162,10 +170,11 @@ Engine activated. Awaiting input.`,
     }
 
     const recognize = candidate.content.parts
-      .filter((part) => part.text)
       .map((part) => part.text)
+      .filter(Boolean)
       .join('')
       .trim();
+
     return recognize;
   } else {
     throw `Http Request Error\nHttp Status: ${response.status}\n${JSON.stringify(response.data)}`;
