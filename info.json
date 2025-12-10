@@ -39,8 +39,8 @@
       }
     },
     {
-      "key": "temperature（默认为 1，范围 0.0-2.0）",
-      "display": "温度",
+      "key": "temperature",
+      "display": "温度（默认为 1，范围 0.0-2.0）",
       "type": "input"
     }
   ],
